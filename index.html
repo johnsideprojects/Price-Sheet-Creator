@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AA Self Storage - Price Sheet Creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #F5F3E9;
+      --card-bg: #FFFFFF;
+      --border-gray: #CBD5E1;
+      --border-yellow: #FFD100;
+      --text-dark: #0F172A;
+      --text-muted: #64748B;
+      --brand-yellow: #FFD100;
+      --brand-red: #EF4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @page {
+      size: auto;
+      margin: 0mm;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 3px solid var(--border-yellow);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: 1px solid var(--border-gray);
+      background: #FFF;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover { background: #F8FAFC; }
+
+    .btn-yellow {
+      background: var(--brand-yellow);
+      border-color: #E6B800;
+      color: #000;
+    }
+    .btn-yellow:hover { background: #E6B800; }
+
+    .btn-red {
+      color: var(--brand-red);
+      border-color: #FECDD3;
+      background: #FEF2F2;
+    }
+    .btn-red:hover { background: #FEE2E2; }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-gray);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border-yellow);
+      font-weight: 800;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-body {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: 1.5px solid var(--border-gray);
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: #000;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .unit-box-inputs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .unit-item-input {
+      background: #F8FAFC;
+      border: 1.5px solid var(--border-gray);
+      padding: 8px;
+      border-radius: 6px;
+      position: relative;
+    }
+
+    .unit-item-input .del-btn {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      color: var(--brand-red);
+      border: none;
+      background: none;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin: 20px 0 10px 0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--border-gray);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sheet-wrapper {
+      background: #525659;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100%;
+    }
+
+    .sheet-page {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 800px;
+      border: 3px solid #000;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      color: #000;
+      font-family: 'Barlow', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100%;
+    }
+
+    .logo-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logo-badge {
+      border: 2px solid #000;
+      background: #FFD100;
+      padding: 4px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      box-shadow: 2px 2px 0px #000;
+    }
+
+    .logo-badge span {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: 28px;
+      color: #D90000;
+      letter-spacing: -1px;
+    }
+
+    .header-text-block {
+      text-align: left;
+    }
+
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    .brand-subtitle {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .sheet-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      flex: 1;
+    }
+
+    .section-block {
+      margin-bottom: 15px;
+    }
+
+    .section-title-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1.5px solid #000;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 900;
+      font-size: 26px;
+    }
+
+    .section-desc {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .grid-5-col {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .grid-3-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .unit-box {
+      border: 1px solid #000;
+      padding: 12px 6px;
+      text-align: center;
+    }
+
+    .box-size {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .box-price {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .parking-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    .parking-subhead {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      border-left: 3px solid #000;
+      padding-left: 6px;
+      margin-bottom: 10px;
+    }
+
+    .line-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #000;
+      padding: 8px 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .footer-callout {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px solid #000;
+    }
+
+    .footer-callout h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .footer-callout .phone-num {
+      font-size: 34px;
+      font-weight: 900;
+      margin-top: 2px;
+    }
+
+    @media print {
+      body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      header, .no-print { display: none !important; }
+      main { display: block; padding: 0; }
+      .card { border: none; box-shadow: none; }
+      .sheet-wrapper { padding: 0; background: none; min-height: 100vh; }
+      .sheet-page { 
+        border: 3px solid #000; 
+        box-shadow: none; 
+        width: 100%; 
+        height: 100vh;
+        max-width: 100%; 
+        box-sizing: border-box;
+        padding: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">AA Self Storage - Price Sheet Creator</div>
+    <div class="header-actions">
+      <button class="btn btn-red" onclick="resetForm()">Reset Form</button>
+      <button class="btn btn-yellow" onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="card no-print">
+      <div class="card-header">
+        <span>Price Sheet Setup</span>
+      </div>
+      <div class="card-body">
+        
+        <div class="form-group">
+          <label>Facility Address Header</label>
+          <input type="text" id="facAddress" class="form-control" value="1557 Brunswick Village Blvd. | Leland, NC 28451" oninput="renderSheet()">
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number (Footer)</label>
+          <input type="text" id="facPhone" class="form-control" value="910-408-1600" oninput="renderSheet()">
+        </div>
+
+        <!-- Climate Controlled Section -->
+        <div class="section-label">
+          <span>Climate-Controlled Units</span>
+          <button class="btn btn-yellow" style="padding: 4px 10px; font-size: 11px;" onclick="addUnit('climate')">+ Add Unit</button>
+        </div>
+        <div id="climateInputs" class="unit-box-inputs"></div>
+
+        <!-- Standard Section -->
+        <div class="section-label">
+          <span>Standard Units</span>
+          <button class="btn btn-yellow" style="padding: 4px 10px; font-size: 11px;" onclick="addUnit('standard')">+ Add Unit</button>
+        </div>
+        <div id="standardInputs" class="unit-box-inputs"></div>
+
+        <!-- Covered RV Section -->
+        <div class="section-label">
+          <span>Covered RV Parking</span>
+          <button class="btn btn-yellow" style="padding: 4px 10px; font-size: 11px;" onclick="addParking('covered')">+ Add Option</button>
+        </div>
+        <div id="coveredInputs"></div>
+
+        <!-- Outside Parking Section -->
+        <div class="section-label">
+          <span>Outside Parking</span>
+          <button class="btn btn-yellow" style="padding: 4px 10px; font-size: 11px;" onclick="addParking('outside')">+ Add Option</button>
+        </div>
+        <div id="outsideInputs"></div>
+
+      </div>
+    </div>
+
+    <!-- Live Preview Sheet -->
+    <div class="card">
+      <div class="card-header no-print">
+        <span>Live Sheet Preview</span>
+      </div>
+      <div class="sheet-wrapper">
+        <div class="sheet-page">
+          
+          <div>
+            <div class="logo-header">
+              <div class="logo-badge"><span>AA</span></div>
+              <div class="header-text-block">
+                <div class="brand-title">AA SELF STORAGE</div>
+                <div class="brand-subtitle" id="outAddress">1557 Brunswick Village Blvd. | Leland, NC 28451</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sheet-content">
+            <!-- Climate Controlled -->
+            <div class="section-block">
+              <div class="section-title-container">
+                <span class="section-title">Climate-Controlled Units</span>
+                <span class="section-desc">Best for furniture, electronics, and sensitive items.</span>
+              </div>
+              <div class="grid-5-col" id="outClimate"></div>
+            </div>
+
+            <!-- Standard -->
+            <div class="section-block">
+              <div class="section-title-container">
+                <span class="section-title">Standard Units</span>
+                <span class="section-desc">Drive-up access for easy loading and unloading.</span>
+              </div>
+              <div class="grid-3-col" id="outStandard"></div>
+            </div>
+
+            <!-- Vehicle & RV Parking -->
+            <div class="section-block">
+              <div class="section-title-container">
+                <span class="section-title">Vehicle & RV Parking</span>
+                <span class="section-desc">Secure options for boat, camper, or extra vehicle.</span>
+              </div>
+
+              <div class="parking-row">
+                <div>
+                  <div class="parking-subhead">COVERED RV PARKING</div>
+                  <div id="outCovered"></div>
+                </div>
+                <div>
+                  <div class="parking-subhead">OUTSIDE PARKING</div>
+                  <div id="outOutside"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="footer-callout">
+            <h3>Questions? Give us a call!</h3>
+            <div class="phone-num" id="outPhone">910-408-1600</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function cleanAmount(val) {
+      if (!val) return '';
+      return String(val).replace(/[^0-9.]/g, '');
+    }
+
+    function formatCurrency(val) {
+      const clean = cleanAmount(val);
+      return clean ? `$${clean}` : '';
+    }
+
+    let climateUnits = [
+      { size: '10 X 5', price: '105' },
+      { size: '8 X 10', price: '115' },
+      { size: '6 X 15', price: '120' },
+      { size: '6 X 20', price: '130' },
+      { size: '10 X 10', price: '130' },
+      { size: '10 X 13', price: '150' },
+      { size: '10 X 15', price: '170' },
+      { size: '10 X 20', price: '210' },
+      { size: '10 X 30', price: '260' },
+      { size: '10 X 40', price: '335' }
+    ];
+
+    let standardUnits = [
+      { size: '10 X 15', price: '140' },
+      { size: '15 X 13', price: '195' },
+      { size: '10 X 30', price: '220' }
+    ];
+
+    let coveredParking = [
+      { name: 'Standard (12 × 35)', price: '220' },
+      { name: 'Premium (13 × 50)', price: '280' }
+    ];
+
+    let outsideParking = [
+      { name: 'Grass (10×20 to 10×40)', price: '100' },
+      { name: 'Gravel (10×20 to 10×30)', price: '105' },
+      { name: 'Paved (10×20 to 10×35)', price: '110' }
+    ];
+
+    function renderInputs() {
+      // Climate Inputs
+      const cCont = document.getElementById('climateInputs');
+      cCont.innerHTML = '';
+      climateUnits.forEach((u, i) => {
+        cCont.innerHTML += `
+          <div class="unit-item-input">
+            <button class="del-btn" onclick="climateUnits.splice(${i},1); renderInputs(); renderSheet();">&times;</button>
+            <input class="form-control" style="font-size:13px; padding:6px; margin-bottom:4px;" value="${u.size}" placeholder="Size" oninput="climateUnits[${i}].size=this.value; renderSheet();">
+            <input class="form-control" style="font-size:13px; padding:6px;" value="${u.price}" placeholder="Rate (Numeric)" oninput="climateUnits[${i}].price=cleanAmount(this.value); renderSheet();">
+          </div>`;
+      });
+
+      // Standard Inputs
+      const sCont = document.getElementById('standardInputs');
+      sCont.innerHTML = '';
+      standardUnits.forEach((u, i) => {
+        sCont.innerHTML += `
+          <div class="unit-item-input">
+            <button class="del-btn" onclick="standardUnits.splice(${i},1); renderInputs(); renderSheet();">&times;</button>
+            <input class="form-control" style="font-size:13px; padding:6px; margin-bottom:4px;" value="${u.size}" placeholder="Size" oninput="standardUnits[${i}].size=this.value; renderSheet();">
+            <input class="form-control" style="font-size:13px; padding:6px;" value="${u.price}" placeholder="Rate (Numeric)" oninput="standardUnits[${i}].price=cleanAmount(this.value); renderSheet();">
+          </div>`;
+      });
+
+      // Covered Inputs
+      const covCont = document.getElementById('coveredInputs');
+      covCont.innerHTML = '';
+      coveredParking.forEach((p, i) => {
+        covCont.innerHTML += `
+          <div class="form-row" style="margin-bottom:8px;">
+            <input class="form-control" value="${p.name}" placeholder="Type / Size" oninput="coveredParking[${i}].name=this.value; renderSheet();">
+            <input class="form-control" value="${p.price}" placeholder="Rate" oninput="coveredParking[${i}].price=cleanAmount(this.value); renderSheet();">
+          </div>`;
+      });
+
+      // Outside Inputs
+      const outCont = document.getElementById('outsideInputs');
+      outCont.innerHTML = '';
+      outsideParking.forEach((p, i) => {
+        outCont.innerHTML += `
+          <div class="form-row" style="margin-bottom:8px;">
+            <input class="form-control" value="${p.name}" placeholder="Type / Size" oninput="outsideParking[${i}].name=this.value; renderSheet();">
+            <input class="form-control" value="${p.price}" placeholder="Rate" oninput="outsideParking[${i}].price=cleanAmount(this.value); renderSheet();">
+          </div>`;
+      });
+    }
+
+    function addUnit(type) {
+      if (type === 'climate') climateUnits.push({ size: '10 X 10', price: '100' });
+      if (type === 'standard') standardUnits.push({ size: '10 X 10', price: '100' });
+      renderInputs();
+      renderSheet();
+    }
+
+    function addParking(type) {
+      if (type === 'covered') coveredParking.push({ name: 'Standard (10 x 20)', price: '150' });
+      if (type === 'outside') outsideParking.push({ name: 'Paved (10 x 20)', price: '90' });
+      renderInputs();
+      renderSheet();
+    }
+
+    function renderSheet() {
+      document.getElementById('outAddress').innerText = document.getElementById('facAddress').value;
+      document.getElementById('outPhone').innerText = document.getElementById('facPhone').value;
+
+      // Climate Boxes
+      const cOut = document.getElementById('outClimate');
+      cOut.innerHTML = '';
+      climateUnits.forEach(u => {
+        cOut.innerHTML += `
+          <div class="unit-box">
+            <div class="box-size">${u.size}</div>
+            <div class="box-price">${formatCurrency(u.price)}</div>
+          </div>`;
+      });
+
+      // Standard Boxes
+      const sOut = document.getElementById('outStandard');
+      sOut.innerHTML = '';
+      standardUnits.forEach(u => {
+        sOut.innerHTML += `
+          <div class="unit-box">
+            <div class="box-size">${u.size}</div>
+            <div class="box-price">${formatCurrency(u.price)}</div>
+          </div>`;
+      });
+
+      // Covered Lines
+      const covOut = document.getElementById('outCovered');
+      covOut.innerHTML = '';
+      coveredParking.forEach(p => {
+        covOut.innerHTML += `
+          <div class="line-item">
+            <span>${p.name}</span>
+            <span>${formatCurrency(p.price)}</span>
+          </div>`;
+      });
+
+      // Outside Lines
+      const outOut = document.getElementById('outOutside');
+      outOut.innerHTML = '';
+      outsideParking.forEach(p => {
+        outOut.innerHTML += `
+          <div class="line-item">
+            <span>${p.name}</span>
+            <span>${formatCurrency(p.price)}</span>
+          </div>`;
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('facAddress').value = '1557 Brunswick Village Blvd. | Leland, NC 28451';
+      document.getElementById('facPhone').value = '910-408-1600';
+      climateUnits = [
+        { size: '10 X 5', price: '105' },
+        { size: '8 X 10', price: '115' },
+        { size: '6 X 15', price: '120' },
+        { size: '6 X 20', price: '130' },
+        { size: '10 X 10', price: '130' },
+        { size: '10 X 13', price: '150' },
+        { size: '10 X 15', price: '170' },
+        { size: '10 X 20', price: '210' },
+        { size: '10 X 30', price: '260' },
+        { size: '10 X 40', price: '335' }
+      ];
+      standardUnits = [
+        { size: '10 X 15', price: '140' },
+        { size: '15 X 13', price: '195' },
+        { size: '10 X 30', price: '220' }
+      ];
+      coveredParking = [
+        { name: 'Standard (12 × 35)', price: '220' },
+        { name: 'Premium (13 × 50)', price: '280' }
+      ];
+      outsideParking = [
+        { name: 'Grass (10×20 to 10×40)', price: '100' },
+        { name: 'Gravel (10×20 to 10×30)', price: '105' },
+        { name: 'Paved (10×20 to 10×35)', price: '110' }
+      ];
+      renderInputs();
+      renderSheet();
+    }
+
+    renderInputs();
+    renderSheet();
+  </script>
+</body>
+</html>
